@@ -1,0 +1,2 @@
+// Export TypeScript definitions
+export {};

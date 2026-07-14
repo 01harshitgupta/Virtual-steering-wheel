@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #f8fafc; /* Light Slate 50 */
+  --bg-secondary: #f1f5f9; /* Light Slate 100 */
+  --bg-card: rgba(255, 255, 255, 0.85);
+  --text-primary: #0f172a; /* Slate 900 */
+  --text-secondary: #64748b; /* Slate 500 */
+  --border-primary: rgba(15, 23, 42, 0.08);
+  --border-secondary: rgba(15, 23, 42, 0.04);
+}
+
+:root.dark {
+  --bg-primary: #020617; /* Dark Slate 950 */
+  --bg-secondary: #0b1329; /* Dark Slate 900 */
+  --bg-card: rgba(15, 23, 42, 0.65);
+  --text-primary: #f8fafc; /* Light Slate 50 */
+  --text-secondary: #94a3b8; /* Slate 400 */
+  --border-primary: rgba(255, 255, 255, 0.08);
+  --border-secondary: rgba(255, 255, 255, 0.04);
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Custom scrollbars for light theme */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.3);
+    border-radius: 99px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5);
+  }
+}
+
+/* Premium BMW Frosted Glassmorphism Design System */
+@utility glassmorphism {
+  background: var(--bg-card);
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 4px 20px 0 rgba(15, 23, 42, 0.04);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+@utility glass-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid var(--border-primary);
+  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+/* BMW M-Sport Color Accents & Neon Glows */
+@utility neon-glow-blue {
+  box-shadow: 0 0 20px rgba(0, 163, 224, 0.15);
+  border-color: rgba(0, 163, 224, 0.4) !important;
+}
+
+@utility neon-glow-dark-blue {
+  box-shadow: 0 0 20px rgba(0, 36, 107, 0.12);
+  border-color: rgba(0, 36, 107, 0.3) !important;
+}
+
+@utility neon-glow-red {
+  box-shadow: 0 0 20px rgba(232, 43, 43, 0.15);
+  border-color: rgba(232, 43, 43, 0.4) !important;
+}
+
+@utility neon-glow-orange {
+  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.4) !important;
+}
+
+/* BMW M-Sport Accent Stripe */
+@utility bmw-stripes {
+  background: linear-gradient(
+    90deg,
+    #00a3e0 0%,   /* Sky Blue */
+    #00a3e0 33%,
+    #00246b 33%,  /* Dark Navy Blue */
+    #00246b 66%,
+    #e82b2b 66%,  /* Sport Red */
+    #e82b2b 100%
+  );
+}
+
+/* Background grid styling for light tech theme */
+@utility animate-cyber-grid {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+}
+
+/* Light pulsing graphics mesh */
+@keyframes mesh-pulse {
+  0%, 100% {
+    transform: scale(1) translate(0px, 0px);
+  }
+  33% {
+    transform: scale(1.05) translate(20px, -30px);
+  }
+  66% {
+    transform: scale(0.97) translate(-15px, 15px);
+  }
+}
+
+@utility animate-mesh-glow {
+  animation: mesh-pulse 18s ease-in-out infinite;
+}
+
+/* Scanning sweeps */
+@keyframes scan {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@utility animate-scan-line {
+  animation: scan 4s linear infinite;
+}

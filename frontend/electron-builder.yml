@@ -1,0 +1,22 @@
+appId: com.drivesense.app
+productName: DriveSense AI
+directories:
+  output: dist-build
+files:
+  - dist
+  - dist-electron
+  - package.json
+extraResources:
+  - from: "../backend/build"
+    to: "bin"
+    filter:
+      - "**/DriveSenseBackend.exe"
+      - "**/DriveSenseBackend"
+win:
+  target: nsis
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: DriveSense AI
