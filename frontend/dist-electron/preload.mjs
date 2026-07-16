@@ -1,12 +1,1 @@
-let electron = require("electron");
-//#region electron/preload.ts
-electron.contextBridge.exposeInMainWorld("DriveSense", {
-	version: "1.0.0",
-	ping: () => electron.ipcRenderer.invoke("drivesense:ping"),
-	getBackendStatus: () => electron.ipcRenderer.invoke("drivesense:get-backend-status"),
-	restartBackend: () => electron.ipcRenderer.invoke("drivesense:restart-backend"),
-	sendKey: (action, vk) => electron.ipcRenderer.send("drivesense:send-key", action, vk),
-	getSystemStats: () => electron.ipcRenderer.invoke("drivesense:get-stats"),
-	log: (level, ...args) => electron.ipcRenderer.send("drivesense:log", level, ...args)
-});
-//#endregion
+let e=require("electron");e.contextBridge.exposeInMainWorld(`DriveSense`,{version:`1.0.0`,ping:()=>e.ipcRenderer.invoke(`drivesense:ping`),getBackendStatus:()=>e.ipcRenderer.invoke(`drivesense:get-backend-status`),restartBackend:()=>e.ipcRenderer.invoke(`drivesense:restart-backend`),sendKey:(t,n)=>e.ipcRenderer.send(`drivesense:send-key`,t,n),getSystemStats:()=>e.ipcRenderer.invoke(`drivesense:get-stats`),log:(t,...n)=>e.ipcRenderer.send(`drivesense:log`,t,...n)});

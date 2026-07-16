@@ -22,11 +22,15 @@ export default function Analytics() {
   return (
     <div className="flex-1 p-6 md:p-8 flex flex-col gap-6 select-none max-w-7xl mx-auto w-full">
       {/* Header */}
-      <div className="border-b border-slate-900 pb-5">
-        <h1 className="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+      <div className="border-b border-[var(--border-secondary)] pb-5">
+        <h1 className="text-3xl font-black tracking-tight" style={{
+          background: "linear-gradient(135deg, var(--text-primary) 0%, var(--accent-bright) 70%)",
+          WebkitBackgroundClip: "text",
+          WebkitTextFillColor: "transparent"
+        }}>
           Telemetry Analytics
         </h1>
-        <p className="text-xs text-slate-500 mt-1 font-medium uppercase tracking-widest">
+        <p className="text-xs text-[var(--text-secondary)] mt-1 font-bold uppercase tracking-widest">
           Analyze historical input data and steering diagnostics
         </p>
       </div>
@@ -36,12 +40,12 @@ export default function Analytics() {
         {stats.map((item, idx) => {
           const Icon = item.icon;
           return (
-            <div key={idx} className="glass-card p-5 rounded-2xl border border-slate-800/80 shadow-lg flex items-center justify-between">
+            <div key={idx} className="glass-card p-5 rounded-2xl shadow-lg flex items-center justify-between">
               <div className="flex flex-col gap-1">
-                <span className="text-slate-500 text-xs font-semibold uppercase tracking-wider">{item.name}</span>
-                <span className="text-2xl font-bold font-mono text-white mt-1">{item.value}</span>
+                <span className="text-[var(--text-secondary)] text-xs font-semibold uppercase tracking-wider">{item.name}</span>
+                <span className="text-2xl font-black font-mono text-[var(--text-primary)] mt-1">{item.value}</span>
               </div>
-              <div className={`p-2.5 rounded-xl bg-slate-900 ${item.color} border border-slate-800`}>
+              <div className={`p-2.5 rounded-xl bg-[var(--border-secondary)] ${item.color} border border-[var(--border-primary)]`}>
                 <Icon className="w-5 h-5" />
               </div>
             </div>
@@ -53,17 +57,17 @@ export default function Analytics() {
       <TelemetryChart />
 
       {/* Telemetry Logs Table */}
-      <div className="glass-card rounded-2xl border border-slate-800/80 shadow-xl overflow-hidden flex flex-col">
-        <div className="p-5 border-b border-slate-900 flex items-center gap-2">
-          <BarChart3 className="w-4 h-4 text-cyan-400" />
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-400">
+      <div className="glass-card rounded-2xl shadow-xl overflow-hidden flex flex-col">
+        <div className="p-5 border-b border-[var(--border-secondary)] flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 text-cyan-500" />
+          <h2 className="text-sm font-black uppercase tracking-wider text-[var(--text-primary)]/80">
             Real-Time Input Logs
           </h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-950/80 text-slate-400 font-semibold border-b border-slate-900 uppercase tracking-wider font-mono">
+            <thead className="bg-[var(--bg-primary)]/60 text-[var(--text-secondary)] font-semibold border-b border-[var(--border-secondary)] uppercase tracking-wider font-mono">
               <tr>
                 <th className="p-4 pl-6">Timestamp</th>
                 <th className="p-4">Steering Angle</th>
@@ -73,23 +77,23 @@ export default function Analytics() {
                 <th className="p-4 pr-6">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-900/60 font-mono text-slate-300">
+            <tbody className="divide-y divide-[var(--border-secondary)]/60 font-mono text-[var(--text-primary)]/90">
               {history.slice(-8).reverse().map((log, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/20 transition-colors">
-                  <td className="p-4 pl-6 text-slate-500">{log.time}</td>
-                  <td className={`p-4 font-bold ${log.angle > 10 ? "text-cyan-400" : log.angle < -10 ? "text-cyan-400" : "text-slate-300"}`}>
+                <tr key={idx} className="hover:bg-[var(--border-secondary)]/20 transition-colors">
+                  <td className="p-4 pl-6 text-[var(--text-secondary)]/70">{log.time}</td>
+                  <td className={`p-4 font-bold ${log.angle > 10 ? "text-cyan-500" : log.angle < -10 ? "text-cyan-500" : "text-[var(--text-primary)]"}`}>
                     {Math.round(log.angle)}°
                   </td>
                   <td className="p-4">{Math.round(log.speed)} km/h</td>
                   <td className="p-4">{log.latency} ms</td>
-                  <td className="p-4 text-emerald-400">{log.confidence}%</td>
+                  <td className="p-4 text-emerald-500 font-bold">{log.confidence}%</td>
                   <td className="p-4 pr-6">
                     {isTracking ? (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                      <span className="px-2 py-0.5 rounded-full text-[9px] bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 font-semibold">
                         TRACKING
                       </span>
                     ) : (
-                      <span className="px-2 py-0.5 rounded-full text-[9px] bg-slate-900 text-slate-500 border border-slate-800 font-semibold">
+                      <span className="px-2 py-0.5 rounded-full text-[9px] bg-[var(--border-secondary)] text-[var(--text-secondary)] border border-[var(--border-primary)] font-semibold">
                         STANDBY
                       </span>
                     )}

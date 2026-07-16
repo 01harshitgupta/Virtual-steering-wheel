@@ -16,11 +16,7 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-64 flex flex-col h-full z-10 select-none relative"
-      style={{
-        background: "linear-gradient(180deg, #0d0000 0%, #080000 60%, #050000 100%)",
-        borderRight: "1px solid rgba(220,38,38,0.18)",
-      }}
+      className="w-64 flex flex-col h-full z-10 select-none relative glass-card !rounded-none border-y-0 border-l-0"
     >
       {/* Animated left edge glow */}
       <div
@@ -150,8 +146,7 @@ export default function Sidebar() {
 
       {/* Connection & Control Footer */}
       <div
-        className="p-4 flex flex-col gap-3"
-        style={{ borderTop: "1px solid rgba(220,38,38,0.1)", background: "rgba(0,0,0,0.3)" }}
+        className="p-4 flex flex-col gap-3 border-t border-[var(--border-secondary)] bg-black/10"
       >
         {/* Toggle Tracking */}
         <motion.button

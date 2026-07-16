@@ -52,21 +52,21 @@ export default function TelemetryChart() {
   }
 
   return (
-    <div className="glass-card p-5 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col gap-4">
+    <div className="glass-card p-5 rounded-2xl shadow-sm flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+          <h2 className="text-sm font-black uppercase tracking-wider text-[var(--text-primary)]">
             Telemetry Graph
           </h2>
-          <p className="text-xs text-slate-400 mt-0.5 font-sans">Real-time signal tracking log</p>
+          <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-sans">Real-time signal tracking log</p>
         </div>
-        <div className="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200/60">
+        <div className="flex bg-[var(--border-secondary)] p-0.5 rounded-lg border border-[var(--border-primary)]">
           <button
             onClick={() => setActiveTab("angle")}
             className={`px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition-all cursor-pointer ${
               activeTab === "angle"
                 ? "bg-blue-600 text-white shadow-sm shadow-blue-500/10"
-                : "text-slate-400 hover:text-slate-600 border border-transparent"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-transparent"
             }`}
           >
             Steering Angle
@@ -76,7 +76,7 @@ export default function TelemetryChart() {
             className={`px-3 py-1.5 rounded-md text-xs font-bold tracking-wide transition-all cursor-pointer ${
               activeTab === "speed"
                 ? "bg-red-600 text-white shadow-sm shadow-red-500/10"
-                : "text-slate-400 hover:text-slate-600 border border-transparent"
+                : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-transparent"
             }`}
           >
             Velocity
@@ -84,7 +84,7 @@ export default function TelemetryChart() {
         </div>
       </div>
 
-      <div className="relative w-full h-[150px] bg-white rounded-xl overflow-hidden border border-slate-200 p-2">
+      <div className="relative w-full h-[150px] bg-[var(--bg-primary)]/40 rounded-xl overflow-hidden border border-[var(--border-secondary)] p-2">
         <svg
           viewBox={`0 0 ${width} ${height}`}
           className="w-full h-full overflow-visible"
@@ -108,7 +108,7 @@ export default function TelemetryChart() {
             y1={padding}
             x2={width - padding}
             y2={padding}
-            stroke="rgba(15, 23, 42, 0.04)"
+            stroke="rgba(156, 163, 175, 0.12)"
             strokeDasharray="2 2"
           />
           <line
@@ -116,7 +116,7 @@ export default function TelemetryChart() {
             y1={padding + chartHeight / 2}
             x2={width - padding}
             y2={padding + chartHeight / 2}
-            stroke="rgba(15, 23, 42, 0.06)"
+            stroke="rgba(156, 163, 175, 0.18)"
             strokeDasharray="2 2"
           />
           <line
@@ -124,7 +124,7 @@ export default function TelemetryChart() {
             y1={height - padding}
             x2={width - padding}
             y2={height - padding}
-            stroke="rgba(15, 23, 42, 0.04)"
+            stroke="rgba(156, 163, 175, 0.12)"
           />
 
           {/* Grid vertical markers */}
@@ -133,14 +133,14 @@ export default function TelemetryChart() {
             y1={padding}
             x2={padding + chartWidth / 4}
             y2={height - padding}
-            stroke="rgba(15, 23, 42, 0.02)"
+            stroke="rgba(156, 163, 175, 0.08)"
           />
           <line
             x1={padding + chartWidth / 2}
             y1={padding}
             x2={padding + chartWidth / 2}
             y2={height - padding}
-            stroke="rgba(15, 23, 42, 0.04)"
+            stroke="rgba(156, 163, 175, 0.12)"
             strokeDasharray="4 4"
           />
           <line
@@ -148,7 +148,7 @@ export default function TelemetryChart() {
             y1={padding}
             x2={padding + (chartWidth * 3) / 4}
             y2={height - padding}
-            stroke="rgba(15, 23, 42, 0.02)"
+            stroke="rgba(156, 163, 175, 0.08)"
           />
 
           {/* Render Area Plot */}
@@ -184,10 +184,10 @@ export default function TelemetryChart() {
         </svg>
 
         {/* Labels overlay */}
-        <div className="absolute top-2 left-3 flex flex-col text-[9px] text-slate-400 font-bold font-mono">
+        <div className="absolute top-2 left-3 flex flex-col text-[9px] text-[var(--text-secondary)] font-bold font-mono">
           <span>MAX: {Math.round(maxVal)}</span>
         </div>
-        <div className="absolute bottom-2 left-3 flex flex-col text-[9px] text-slate-400 font-bold font-mono">
+        <div className="absolute bottom-2 left-3 flex flex-col text-[9px] text-[var(--text-secondary)] font-bold font-mono">
           <span>MIN: {Math.round(minVal)}</span>
         </div>
       </div>

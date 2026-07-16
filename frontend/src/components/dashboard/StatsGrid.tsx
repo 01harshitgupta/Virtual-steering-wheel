@@ -328,10 +328,9 @@ function StatPill({
 }: { label: string; value: string; color: string; glow: string }) {
   return (
     <div
-      className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl"
+      className="flex flex-col items-center gap-1 px-4 py-2.5 rounded-xl border border-slate-500/25 bg-slate-500/5 shadow-inner"
       style={{
-        background: "rgba(255,255,255,0.03)",
-        border: `1px solid ${color}33`,
+        borderColor: `${color}25`,
         boxShadow: `0 0 12px ${glow}`,
       }}
     >
@@ -385,12 +384,7 @@ export default function StatsGrid() {
     <div className="flex flex-col gap-4">
       {/* Dual gauge cluster */}
       <div
-        className="rounded-2xl relative overflow-hidden"
-        style={{
-          background: "radial-gradient(ellipse at 30% 50%, #1a0000 0%, #0a0000 40%, #050505 100%)",
-          border: "1px solid rgba(255,255,255,0.07)",
-          boxShadow: "0 0 60px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.04)",
-        }}
+        className="glass-card rounded-2xl relative overflow-hidden"
       >
         {/* Background decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
@@ -430,8 +424,7 @@ export default function StatsGrid() {
 
         {/* Bottom stat pills row */}
         <div
-          className="flex items-center justify-around px-6 py-4 relative z-10"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.05)" }}
+          className="flex items-center justify-around px-6 py-4 relative z-10 border-t border-[var(--border-secondary)]"
         >
           <StatPill
             label="Detection"
@@ -439,21 +432,21 @@ export default function StatsGrid() {
             color={confColor}
             glow={`${confColor}22`}
           />
-          <div className="w-px h-8" style={{ background: "rgba(255,255,255,0.07)" }} />
+          <div className="w-px h-8 bg-[var(--border-secondary)]" />
           <StatPill
             label="Latency"
             value={`${isTracking ? latency : 0}ms`}
             color="#38bdf8"
             glow="rgba(56,189,248,0.15)"
           />
-          <div className="w-px h-8" style={{ background: "rgba(255,255,255,0.07)" }} />
+          <div className="w-px h-8 bg-[var(--border-secondary)]" />
           <StatPill
             label="Engine"
             value={isTracking ? "ON" : "OFF"}
             color={isTracking ? "#22c55e" : "#ef4444"}
             glow={isTracking ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.1)"}
           />
-          <div className="w-px h-8" style={{ background: "rgba(255,255,255,0.07)" }} />
+          <div className="w-px h-8 bg-[var(--border-secondary)]" />
           <StatPill
             label="FPS"
             value={isTracking ? "60" : "0"}
@@ -464,8 +457,7 @@ export default function StatsGrid() {
 
         {/* Top header bar */}
         <div
-          className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 py-2 z-20"
-          style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+          className="absolute top-0 left-0 right-0 flex items-center justify-between px-5 py-2 z-20 border-b border-[var(--border-secondary)]"
         >
           <span
             className="text-[9px] font-black tracking-[0.3em] uppercase"

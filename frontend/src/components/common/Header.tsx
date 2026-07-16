@@ -55,11 +55,7 @@ export default function Header() {
 
   return (
     <header
-      className="h-16 px-6 flex items-center justify-between select-none z-10 w-full relative"
-      style={{
-        background: "linear-gradient(90deg, #0d0000 0%, #080000 50%, #0d0000 100%)",
-        borderBottom: "1px solid rgba(220,38,38,0.18)",
-      }}
+      className="h-16 px-6 flex items-center justify-between select-none z-10 w-full relative glass-card !rounded-none border-x-0 border-t-0"
     >
       {/* Subtle speed line sweep */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -101,31 +97,26 @@ export default function Header() {
       {/* Right: Telemetry bar + actions */}
       <div className="flex items-center gap-4 relative z-10">
         <div
-          className="hidden md:flex items-center gap-4 text-[10px] font-mono font-bold px-4 py-1.5 rounded-xl"
-          style={{
-            background: "rgba(220,38,38,0.06)",
-            border: "1px solid rgba(220,38,38,0.15)",
-            color: "rgba(255,255,255,0.4)",
-          }}
+          className="hidden md:flex items-center gap-4 text-[10px] font-mono font-bold px-4 py-1.5 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)]"
         >
           <span className="flex items-center gap-1.5">
-            <Cpu className="w-3 h-3" style={{ color: "rgba(220,38,38,0.6)" }} />
+            <Cpu className="w-3 h-3 text-red-500/80" />
             <span>CPU: {sysStats.cpu}%</span>
           </span>
-          <span className="w-px h-3" style={{ background: "rgba(220,38,38,0.2)" }} />
+          <span className="w-px h-3 bg-[var(--border-secondary)]" />
           <span className="flex items-center gap-1.5">
-            <HardDrive className="w-3 h-3" style={{ color: "rgba(220,38,38,0.6)" }} />
+            <HardDrive className="w-3 h-3 text-red-500/80" />
             <span>RAM: {sysStats.ram} MB</span>
           </span>
           {isTracking && (
             <>
-              <span className="w-px h-3" style={{ background: "rgba(220,38,38,0.2)" }} />
-              <span className="flex items-center gap-1.5" style={{ color: "#f97316" }}>
+              <span className="w-px h-3 bg-[var(--border-secondary)]" />
+              <span className="flex items-center gap-1.5 text-orange-500">
                 <Activity className="w-3 h-3 animate-pulse" />
                 <span>{latency}ms</span>
               </span>
-              <span className="w-px h-3" style={{ background: "rgba(220,38,38,0.2)" }} />
-              <span style={{ color: "#ef4444", textShadow: "0 0 6px rgba(239,68,68,0.5)" }}>60 FPS</span>
+              <span className="w-px h-3 bg-[var(--border-secondary)]" />
+              <span className="text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,0.5)]">60 FPS</span>
             </>
           )}
         </div>
@@ -134,36 +125,28 @@ export default function Header() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2 rounded-xl border transition-all cursor-pointer"
-            style={{
-              background: "rgba(220,38,38,0.07)",
-              borderColor: "rgba(220,38,38,0.2)",
-              color: "rgba(220,38,38,0.6)",
-            }}
+            className="p-2 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
             title="Toggle Theme"
           >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
           </button>
           <button
             onClick={() => setShowInfoModal(true)}
-            className="p-2 rounded-xl border transition-all cursor-pointer"
-            style={{ background: "rgba(220,38,38,0.07)", borderColor: "rgba(220,38,38,0.2)", color: "rgba(220,38,38,0.6)" }}
+            className="p-2 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
             title="System Diagnostics"
           >
             <Info className="w-4 h-4" />
           </button>
           <button
             onClick={() => navigate("/settings")}
-            className="p-2 rounded-xl border transition-all cursor-pointer"
-            style={{ background: "rgba(220,38,38,0.07)", borderColor: "rgba(220,38,38,0.2)", color: "rgba(220,38,38,0.6)" }}
+            className="p-2 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
             title="Settings"
           >
             <Settings className="w-4 h-4" />
           </button>
-          <span className="h-4 w-px" style={{ background: "rgba(220,38,38,0.15)" }} />
+          <span className="h-4 w-px bg-[var(--border-secondary)]" />
           <button
-            className="w-8 h-8 rounded-xl border flex items-center justify-center transition-all cursor-pointer"
-            style={{ background: "rgba(220,38,38,0.07)", borderColor: "rgba(220,38,38,0.2)", color: "rgba(220,38,38,0.6)" }}
+            className="w-8 h-8 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
             title="Profile"
           >
             <User className="w-4 h-4" />

@@ -244,18 +244,18 @@ export default function MiniGame() {
   }, [isTracking, speed, steeringAngle, gesture]);
 
   return (
-    <div className="glass-card p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-4">
+    <div className="glass-card p-5 rounded-2xl flex flex-col gap-4">
       {/* Header controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
+          <div className="p-1.5 rounded-lg bg-red-500/10 text-red-500 border border-red-500/20">
             <Gamepad className="w-4 h-4" />
           </div>
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
+            <h2 className="text-sm font-black uppercase tracking-wider text-[var(--text-primary)]">
               Interactive BMW Simulator
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5 font-sans">
+            <p className="text-xs text-[var(--text-secondary)] mt-0.5 font-sans">
               Tilt hands left/right to steer • Hold wide to accelerate • Close palm to brake
             </p>
           </div>
@@ -264,10 +264,10 @@ export default function MiniGame() {
         {/* Audio volume toggles */}
         <button
           onClick={toggleAudio}
-          className={`p-1.5 rounded-lg border transition-all ${
+          className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
             audioEnabled
-              ? "bg-blue-50 text-blue-600 border-blue-200"
-              : "bg-white border-slate-200 text-slate-500 hover:text-slate-700"
+              ? "bg-red-500/15 text-red-500 border-red-500/35 shadow-sm shadow-red-500/10"
+              : "bg-transparent border-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
           }`}
           title="Toggle Engine Rev Audio"
         >
@@ -276,7 +276,7 @@ export default function MiniGame() {
       </div>
 
       {/* Retro Canvas Track Frame */}
-      <div className="relative aspect-video rounded-xl bg-slate-100 border border-slate-200 overflow-hidden">
+      <div className="relative aspect-video rounded-xl bg-[var(--bg-primary)]/40 border border-[var(--border-secondary)] overflow-hidden">
         <canvas
           ref={canvasRef}
           width={640}
