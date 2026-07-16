@@ -1,4 +1,4 @@
-import { Shield, Settings, Info, Activity, X, HelpCircle, Key, Play, Sun, Moon, Cpu, HardDrive, User } from "lucide-react";
+import { Settings, Info, Activity, X, HelpCircle, Key, Play, Sun, Moon, Cpu, HardDrive, User, Zap } from "lucide-react";
 import { useStore } from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
@@ -54,94 +54,117 @@ export default function Header() {
   }, []);
 
   return (
-    <header className="h-16 border-b border-[var(--border-primary)] bg-[var(--bg-card)] backdrop-blur-md px-6 flex items-center justify-between select-none z-10 w-full relative transition-colors duration-200">
-      {/* Left: Branding & Status Links */}
-      <div className="flex items-center gap-4">
+    <header
+      className="h-16 px-6 flex items-center justify-between select-none z-10 w-full relative"
+      style={{
+        background: "linear-gradient(90deg, #0d0000 0%, #080000 50%, #0d0000 100%)",
+        borderBottom: "1px solid rgba(220,38,38,0.18)",
+      }}
+    >
+      {/* Subtle speed line sweep */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/2 left-0 right-0 h-px animate-speed-line"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(220,38,38,0.15), transparent)", animationDuration: "4s" }} />
+      </div>
+      {/* Left: Brand + status */}
+      <div className="flex items-center gap-4 relative z-10">
         <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate("/")}>
-          <Shield className="w-5 h-5 text-blue-600 group-hover:rotate-12 transition-transform duration-300" />
-          <span className="font-extrabold text-sm uppercase tracking-wider text-[var(--text-primary)] transition-colors duration-200">
+          <Zap className="w-5 h-5 transition-all duration-300 group-hover:scale-110" style={{ color: "#ef4444", filter: "drop-shadow(0 0 4px rgba(239,68,68,0.6))" }} />
+          <span className="font-black text-sm uppercase tracking-[0.15em]" style={{
+            background: "linear-gradient(135deg, #fff 0%, #ef4444 80%)",
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>
             DriveSense Console
           </span>
         </div>
-        <span className="h-4 w-px bg-[var(--border-primary)]" />
-        <div className="flex items-center gap-2">
-          <span className="text-[9px] text-[var(--text-secondary)] font-bold uppercase tracking-wider">
-            Status:
-          </span>
+        <span className="h-4 w-px" style={{ background: "rgba(220,38,38,0.2)" }} />
+        <div
+          className="flex items-center gap-2 px-2 py-1 rounded"
+          style={{
+            background: isConnected ? "rgba(34,197,94,0.08)" : "rgba(255,255,255,0.04)",
+            border: `1px solid ${isConnected ? "rgba(34,197,94,0.25)" : "rgba(255,255,255,0.07)"}`,
+          }}
+        >
           <span
-            className={`text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded flex items-center gap-1.5 ${
-              isConnected
-                ? "bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 border border-blue-100 dark:border-blue-900/50"
-                : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-primary)]"
-            }`}
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${isConnected ? "bg-blue-500 animate-pulse" : "bg-slate-400"}`} />
-            {isConnected ? "Server Link Online" : "Server Link Standby"}
+            className="w-1.5 h-1.5 rounded-full"
+            style={{ background: isConnected ? "#22c55e" : "rgba(255,255,255,0.2)",
+              boxShadow: isConnected ? "0 0 6px rgba(34,197,94,0.9)" : "none",
+              animation: isConnected ? "red-heartbeat 2s ease-in-out infinite" : "none",
+            }}
+          />
+          <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: isConnected ? "#4ade80" : "rgba(255,255,255,0.3)" }}>
+            {isConnected ? "Server Online" : "Server Standby"}
           </span>
         </div>
       </div>
 
-      {/* Right: Live Diagnostics, Theme control & Profile triggers */}
-      <div className="flex items-center gap-5">
-        {/* Core telemetry details (CPU, RAM, latency & FPS logs) */}
-        <div className="hidden md:flex items-center gap-5 text-[10px] font-mono font-semibold text-[var(--text-secondary)] bg-[var(--bg-secondary)] border border-[var(--border-primary)] px-4 py-1.5 rounded-xl transition-colors duration-200">
+      {/* Right: Telemetry bar + actions */}
+      <div className="flex items-center gap-4 relative z-10">
+        <div
+          className="hidden md:flex items-center gap-4 text-[10px] font-mono font-bold px-4 py-1.5 rounded-xl"
+          style={{
+            background: "rgba(220,38,38,0.06)",
+            border: "1px solid rgba(220,38,38,0.15)",
+            color: "rgba(255,255,255,0.4)",
+          }}
+        >
           <span className="flex items-center gap-1.5">
-            <Cpu className="w-3.5 h-3.5 text-blue-500" />
+            <Cpu className="w-3 h-3" style={{ color: "rgba(220,38,38,0.6)" }} />
             <span>CPU: {sysStats.cpu}%</span>
           </span>
-          <span className="w-px h-3.5 bg-[var(--border-primary)]" />
+          <span className="w-px h-3" style={{ background: "rgba(220,38,38,0.2)" }} />
           <span className="flex items-center gap-1.5">
-            <HardDrive className="w-3.5 h-3.5 text-blue-500" />
+            <HardDrive className="w-3 h-3" style={{ color: "rgba(220,38,38,0.6)" }} />
             <span>RAM: {sysStats.ram} MB</span>
           </span>
           {isTracking && (
             <>
-              <span className="w-px h-3.5 bg-[var(--border-primary)]" />
-              <span className="flex items-center gap-1.5 text-blue-600 dark:text-blue-400 font-bold">
-                <Activity className="w-3.5 h-3.5 animate-pulse text-blue-600 dark:text-blue-400" />
-                <span>LATENCY: {latency}ms</span>
+              <span className="w-px h-3" style={{ background: "rgba(220,38,38,0.2)" }} />
+              <span className="flex items-center gap-1.5" style={{ color: "#f97316" }}>
+                <Activity className="w-3 h-3 animate-pulse" />
+                <span>{latency}ms</span>
               </span>
-              <span className="w-px h-3.5 bg-[var(--border-primary)]" />
-              <span className="text-red-500 font-bold">FPS: 60</span>
+              <span className="w-px h-3" style={{ background: "rgba(220,38,38,0.2)" }} />
+              <span style={{ color: "#ef4444", textShadow: "0 0 6px rgba(239,68,68,0.5)" }}>60 FPS</span>
             </>
           )}
         </div>
 
-        <span className="hidden sm:inline h-4 w-px bg-[var(--border-primary)]" />
-
         {/* Action icons */}
         <div className="flex items-center gap-2">
-          {/* Theme Toggle */}
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2 rounded-xl bg-[var(--bg-secondary)] hover:opacity-85 border border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
-            title="Toggle Light/Dark Theme"
+            className="p-2 rounded-xl border transition-all cursor-pointer"
+            style={{
+              background: "rgba(220,38,38,0.07)",
+              borderColor: "rgba(220,38,38,0.2)",
+              color: "rgba(220,38,38,0.6)",
+            }}
+            title="Toggle Theme"
           >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4 text-blue-600" />}
+            {isDarkMode ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4" />}
           </button>
-
           <button
             onClick={() => setShowInfoModal(true)}
-            className="p-2 rounded-xl bg-[var(--bg-secondary)] hover:opacity-85 border border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
+            className="p-2 rounded-xl border transition-all cursor-pointer"
+            style={{ background: "rgba(220,38,38,0.07)", borderColor: "rgba(220,38,38,0.2)", color: "rgba(220,38,38,0.6)" }}
             title="System Diagnostics"
           >
             <Info className="w-4 h-4" />
           </button>
-          
           <button
             onClick={() => navigate("/settings")}
-            className="p-2 rounded-xl bg-[var(--bg-secondary)] hover:opacity-85 border border-[var(--border-primary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
-            title="Open Configurations"
+            className="p-2 rounded-xl border transition-all cursor-pointer"
+            style={{ background: "rgba(220,38,38,0.07)", borderColor: "rgba(220,38,38,0.2)", color: "rgba(220,38,38,0.6)" }}
+            title="Settings"
           >
             <Settings className="w-4 h-4" />
           </button>
-
-          <span className="h-4 w-px bg-[var(--border-primary)]" />
-
-          {/* Profile Menu Avatar */}
+          <span className="h-4 w-px" style={{ background: "rgba(220,38,38,0.15)" }} />
           <button
-            className="w-8 h-8 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border-primary)] hover:opacity-85 flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all cursor-pointer"
-            title="Profile details"
+            className="w-8 h-8 rounded-xl border flex items-center justify-center transition-all cursor-pointer"
+            style={{ background: "rgba(220,38,38,0.07)", borderColor: "rgba(220,38,38,0.2)", color: "rgba(220,38,38,0.6)" }}
+            title="Profile"
           >
             <User className="w-4 h-4" />
           </button>

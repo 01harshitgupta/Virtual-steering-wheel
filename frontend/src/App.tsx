@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Dashboard from "./pages/Dashboard";
@@ -6,9 +6,11 @@ import Calibration from "./pages/Calibration";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import { useStore } from "./store/useStore";
+import LoadingScreen from "./components/LoadingScreen";
 
 function App() {
   const { isTracking, isConnected, setSteeringAngle, setSpeed, addTelemetryPoint, settings, steeringAngle, gesture } = useStore();
+  const [showLoader, setShowLoader] = useState(true);
   const keyStateRef = useRef({ left: false, right: false, up: false, down: false });
 
   // Handle WebSocket Connection based on Tracking status
@@ -262,16 +264,19 @@ function App() {
   }, [isTracking, steeringAngle, gesture]);
 
   return (
-    <Router>
-      <MainLayout>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/calibration" element={<Calibration />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </MainLayout>
-    </Router>
+    <>
+      {showLoader && <LoadingScreen onComplete={() => setShowLoader(false)} />}
+      <Router>
+        <MainLayout>
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/calibration" element={<Calibration />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<Settings />} />
+          </Routes>
+        </MainLayout>
+      </Router>
+    </>
   );
 }
 

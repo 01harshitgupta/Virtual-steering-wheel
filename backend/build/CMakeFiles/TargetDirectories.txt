@@ -1,0 +1,3 @@
+C:/coding/web dev/full projects/vsw/backend/build/CMakeFiles/DriveSenseBackend.dir
+C:/coding/web dev/full projects/vsw/backend/build/CMakeFiles/edit_cache.dir
+C:/coding/web dev/full projects/vsw/backend/build/CMakeFiles/rebuild_cache.dir

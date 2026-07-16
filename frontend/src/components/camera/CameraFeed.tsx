@@ -492,31 +492,58 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
   }, [isTracking, isFlipped, showSkeleton, mediaPipeLoaded]);
 
   return (
-    <div className="glass-card p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col gap-4">
+    <div
+      className="glass-card rounded-2xl flex flex-col gap-0 relative overflow-hidden animate-fade-in-up"
+      style={{ borderColor: "rgba(220,38,38,0.22)", border: "1px solid rgba(220,38,38,0.22)" }}
+    >
+      {/* Top racing stripe */}
+      <div className="h-[2px] w-full" style={{
+        background: "linear-gradient(90deg, #7f1d1d, #dc2626 30%, #f97316 50%, #dc2626 70%, #7f1d1d)"
+      }} />
+
+      {/* Scan line animation */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden z-0">
+        <div
+          className="absolute left-0 right-0 h-px animate-scan-line"
+          style={{ background: "linear-gradient(90deg, transparent, rgba(220,38,38,0.35), transparent)" }}
+        />
+      </div>
+
       {/* Feed Panel Header Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="p-1.5 rounded-lg bg-blue-50 text-blue-600">
-            <Video className="w-4 h-4" />
-          </div>
+      <div className="flex items-center justify-between px-4 pt-3 pb-3 border-b relative z-10" style={{ borderColor: "rgba(220,38,38,0.12)" }}>
+        <div className="flex items-center gap-2.5">
+          {/* Live recording dot */}
+          <div
+            className="w-2 h-2 rounded-full"
+            style={{
+              background: isTracking ? "#dc2626" : "#444",
+              boxShadow: isTracking ? "0 0 8px rgba(220,38,38,0.9)" : "none",
+              animation: isTracking ? "red-heartbeat 1.5s ease-in-out infinite" : "none",
+            }}
+          />
           <div>
-            <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">
-              MediaPipe Skeletal Tracker
+            <h2 className="text-[11px] font-black uppercase tracking-[0.18em] text-white/80">
+              MediaPipe Hand Tracker
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5 font-sans">
-              Press thumb down: Left Hand = Brake • Right Hand = Accelerate
+            <p className="text-[9px] font-bold tracking-wider mt-0.5" style={{ color: "rgba(220,38,38,0.5)" }}>
+              THUMB DOWN: L=BRAKE · R=ACCELERATE
             </p>
           </div>
         </div>
 
         {/* Dropdowns & Visibility controls */}
         {isTracking && (
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2">
             {/* Expanded view toggle */}
             {onToggleExpand && (
               <button
                 onClick={onToggleExpand}
-                className="p-1.5 rounded-lg border border-slate-200 bg-white text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-all cursor-pointer"
+                className="p-1.5 rounded-lg border transition-all cursor-pointer"
+                style={{
+                  borderColor: "rgba(220,38,38,0.3)",
+                  background: "rgba(220,38,38,0.08)",
+                  color: "rgba(220,38,38,0.7)",
+                }}
                 title={isExpanded ? "Collapse View" : "Expand View for Hands"}
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
@@ -526,11 +553,12 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
             {/* Flip Feed control */}
             <button
               onClick={() => setIsFlipped(!isFlipped)}
-              className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
-                isFlipped
-                  ? "bg-blue-50 text-blue-600 border-blue-200"
-                  : "bg-white border-slate-200 text-slate-500 hover:text-slate-700"
-              }`}
+              className="p-1.5 rounded-lg border transition-all cursor-pointer"
+              style={{
+                borderColor: isFlipped ? "rgba(249,115,22,0.5)" : "rgba(220,38,38,0.2)",
+                background: isFlipped ? "rgba(249,115,22,0.12)" : "rgba(220,38,38,0.06)",
+                color: isFlipped ? "#f97316" : "rgba(220,38,38,0.6)",
+              }}
               title="Mirror Camera Output"
             >
               <RefreshCw className="w-3.5 h-3.5" />
@@ -539,11 +567,12 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
             {/* Skeleton visual check */}
             <button
               onClick={() => setShowSkeleton(!showSkeleton)}
-              className={`p-1.5 rounded-lg border transition-all cursor-pointer ${
-                showSkeleton
-                  ? "bg-blue-50 text-blue-600 border-blue-200"
-                  : "bg-white border-slate-200 text-slate-500 hover:text-slate-700"
-              }`}
+              className="p-1.5 rounded-lg border transition-all cursor-pointer"
+              style={{
+                borderColor: showSkeleton ? "rgba(220,38,38,0.5)" : "rgba(220,38,38,0.2)",
+                background: showSkeleton ? "rgba(220,38,38,0.12)" : "rgba(220,38,38,0.06)",
+                color: showSkeleton ? "#ef4444" : "rgba(220,38,38,0.5)",
+              }}
               title="Toggle Landmarks Overlay"
             >
               {showSkeleton ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
@@ -552,37 +581,69 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
         )}
       </div>
 
-      <div className={`relative rounded-xl bg-slate-900 border border-slate-100 overflow-hidden flex items-center justify-center transition-all duration-300 ${
-        isExpanded ? "h-[480px]" : "aspect-video"
-      }`}>
-        {/* Hidden video element used to capture camera stream for MediaPipe */}
+      <div
+        className={`relative overflow-hidden flex items-center justify-center transition-all duration-300 ${
+          isExpanded ? "h-[480px]" : "aspect-video"
+        }`}
+        style={{
+          background: "radial-gradient(ellipse at center, #150000 0%, #080000 60%, #050505 100%)",
+        }}
+      >
+        {/* Animated corner brackets */}
+        {["top-2 left-2","top-2 right-2","bottom-2 left-2","bottom-2 right-2"].map((pos,i) => (
+          <div key={pos} className={`absolute ${pos} w-5 h-5 pointer-events-none animate-corner-flicker`}
+            style={{ animationDelay: `${i*1.5}s` }}>
+            <div className="absolute top-0 left-0 w-full h-px bg-red-600/70" />
+            <div className="absolute top-0 left-0 h-full w-px bg-red-600/70" />
+          </div>
+        ))}
+
+        {/* REC badge */}
+        {isTracking && (
+          <div className="absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2 py-0.5 rounded"
+            style={{ background: "rgba(220,38,38,0.18)", border: "1px solid rgba(220,38,38,0.4)" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-red-500" style={{ animation: "red-heartbeat 1s ease-in-out infinite" }} />
+            <span className="text-[9px] font-black tracking-widest text-red-400 font-mono">REC</span>
+          </div>
+        )}
+
+        {/* Hidden video element */}
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className={`absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-screen ${
+          className={`absolute inset-0 w-full h-full object-cover opacity-70 mix-blend-screen ${
             isFlipped ? "scale-x-[-1]" : ""
           } ${hasWebcam && isTracking ? "block" : "hidden"}`}
         />
 
         {(!hasWebcam || !isTracking) && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-slate-400 gap-3 z-0 bg-slate-100">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 z-0">
             {hasWebcam === false && isTracking ? (
               <>
-                <CameraOff className="w-12 h-12 text-red-500/50" />
-                <span className="text-xs text-red-600 font-bold font-mono">
+                <CameraOff className="w-10 h-10" style={{ color: "rgba(220,38,38,0.5)" }} />
+                <span className="text-[11px] font-black font-mono tracking-[0.2em] text-red-600">
                   CAMERA ACCESS ERROR
                 </span>
-                <span className="text-[10px] text-slate-400 px-8 text-center leading-normal">
-                  Grant permission to access your webcam or check device connections.
+                <span className="text-[10px] px-8 text-center leading-relaxed" style={{ color: "rgba(255,255,255,0.3)" }}>
+                  Grant webcam permission or check connections.
                 </span>
               </>
             ) : (
               <>
-                <Camera className="w-12 h-12 text-slate-300 animate-pulse" />
-                <span className="text-xs text-slate-400 font-bold tracking-wider font-mono">
-                  {mediaPipeLoaded ? "CAMERA FEED OFF" : "LOADING TRACKER MODULE..."}
+                <div className="relative">
+                  <Camera className="w-10 h-10 animate-pulse" style={{ color: "rgba(220,38,38,0.4)" }} />
+                  <div className="absolute inset-0 rounded-full" style={{
+                    background: "radial-gradient(circle, rgba(220,38,38,0.15) 0%, transparent 70%)",
+                    animation: "red-heartbeat 2s ease-in-out infinite",
+                  }} />
+                </div>
+                <span className="text-[11px] font-black font-mono tracking-[0.2em]" style={{ color: "rgba(220,38,38,0.6)" }}>
+                  {mediaPipeLoaded ? "CAMERA OFFLINE" : "LOADING TRACKER..."}
+                </span>
+                <span className="text-[9px] font-mono" style={{ color: "rgba(255,255,255,0.2)" }}>
+                  START ENGINE TO ACTIVATE
                 </span>
               </>
             )}

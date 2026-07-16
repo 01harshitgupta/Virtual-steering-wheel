@@ -1,144 +1,223 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Orbitron:wght@400;700;900&display=swap");
 @import "tailwindcss";
 
+/* ============================================================
+   DRIVESENSE AI — Red Bull Racing Dark Theme
+   Black · Crimson Red · Gold Accent
+   ============================================================ */
+
 :root {
-  --bg-primary: #f8fafc; /* Light Slate 50 */
-  --bg-secondary: #f1f5f9; /* Light Slate 100 */
-  --bg-card: rgba(255, 255, 255, 0.85);
-  --text-primary: #0f172a; /* Slate 900 */
-  --text-secondary: #64748b; /* Slate 500 */
-  --border-primary: rgba(15, 23, 42, 0.08);
-  --border-secondary: rgba(15, 23, 42, 0.04);
+  --bg-primary: #070707;
+  --bg-secondary: #100005;
+  --bg-card: rgba(15, 0, 5, 0.82);
+  --text-primary: #f0f0f0;
+  --text-secondary: #8a8a9a;
+  --border-primary: rgba(220, 38, 38, 0.18);
+  --border-secondary: rgba(220, 38, 38, 0.08);
+  --accent: #dc2626;
+  --accent-bright: #ef4444;
+  --accent-dark: #7f1d1d;
+  --accent-gold: #f59e0b;
+  --accent-orange: #f97316;
 }
 
-:root.dark {
-  --bg-primary: #020617; /* Dark Slate 950 */
-  --bg-secondary: #0b1329; /* Dark Slate 900 */
-  --bg-card: rgba(15, 23, 42, 0.65);
-  --text-primary: #f8fafc; /* Light Slate 50 */
-  --text-secondary: #94a3b8; /* Slate 400 */
-  --border-primary: rgba(255, 255, 255, 0.08);
-  --border-secondary: rgba(255, 255, 255, 0.04);
+:root.dark, :root {
+  --bg-primary: #070707;
+  --bg-secondary: #100005;
+  --bg-card: rgba(15, 0, 5, 0.82);
+  --text-primary: #f0f0f0;
+  --text-secondary: #8a8a9a;
+  --border-primary: rgba(220, 38, 38, 0.18);
+  --border-secondary: rgba(220, 38, 38, 0.08);
 }
 
 @layer base {
-  html,
-  body,
-  #root {
-    width: 100%;
-    height: 100%;
-    margin: 0;
+  html, body, #root {
+    width: 100%; height: 100%; margin: 0;
     overflow: hidden;
     background-color: var(--bg-primary);
     color: var(--text-primary);
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    transition: background-color 0.2s ease, color 0.2s ease;
+    font-family: 'Inter', system-ui, sans-serif;
   }
 
-  /* Custom scrollbars for light theme */
-  ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  ::-webkit-scrollbar-track {
-    background: rgba(241, 245, 249, 0.5);
-  }
-  ::-webkit-scrollbar-thumb {
-    background: rgba(148, 163, 184, 0.3);
-    border-radius: 99px;
-  }
-  ::-webkit-scrollbar-thumb:hover {
-    background: rgba(148, 163, 184, 0.5);
-  }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: rgba(0,0,0,0.4); }
+  ::-webkit-scrollbar-thumb { background: rgba(220,38,38,0.4); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(220,38,38,0.7); }
+  ::selection { background: rgba(220,38,38,0.35); color: #fff; }
 }
 
-/* Premium BMW Frosted Glassmorphism Design System */
+/* ── GLASSMORPHISM ─────────────────────────────────────────── */
 @utility glassmorphism {
   background: var(--bg-card);
-  backdrop-filter: blur(20px) saturate(190%);
-  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  backdrop-filter: blur(22px) saturate(160%);
+  -webkit-backdrop-filter: blur(22px) saturate(160%);
   border: 1px solid var(--border-primary);
-  box-shadow: 0 4px 20px 0 rgba(15, 23, 42, 0.04);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.6), inset 0 1px 0 rgba(220,38,38,0.07);
 }
 
 @utility glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(24px) saturate(190%);
-  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
   border: 1px solid var(--border-primary);
-  box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.03);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow:
+    0 12px 48px -4px rgba(0,0,0,0.7),
+    0 4px 16px -2px rgba(0,0,0,0.5),
+    inset 0 1px 0 rgba(220,38,38,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.3);
 }
 
-/* BMW M-Sport Color Accents & Neon Glows */
-@utility neon-glow-blue {
-  box-shadow: 0 0 20px rgba(0, 163, 224, 0.15);
-  border-color: rgba(0, 163, 224, 0.4) !important;
-}
-
-@utility neon-glow-dark-blue {
-  box-shadow: 0 0 20px rgba(0, 36, 107, 0.12);
-  border-color: rgba(0, 36, 107, 0.3) !important;
-}
-
+/* ── NEON GLOWS ─────────────────────────────────────────────── */
 @utility neon-glow-red {
-  box-shadow: 0 0 20px rgba(232, 43, 43, 0.15);
-  border-color: rgba(232, 43, 43, 0.4) !important;
+  box-shadow: 0 0 16px rgba(220,38,38,0.5), 0 0 40px rgba(220,38,38,0.15);
+  border-color: rgba(220,38,38,0.6) !important;
 }
-
+@utility neon-glow-gold {
+  box-shadow: 0 0 16px rgba(245,158,11,0.4), 0 0 36px rgba(245,158,11,0.12);
+  border-color: rgba(245,158,11,0.5) !important;
+}
+@utility neon-glow-blue {
+  box-shadow: 0 0 16px rgba(59,130,246,0.25);
+  border-color: rgba(59,130,246,0.35) !important;
+}
+@utility neon-glow-dark-blue {
+  box-shadow: 0 0 16px rgba(30,58,138,0.2);
+  border-color: rgba(30,58,138,0.3) !important;
+}
 @utility neon-glow-orange {
-  box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
-  border-color: rgba(249, 115, 22, 0.4) !important;
+  box-shadow: 0 0 16px rgba(249,115,22,0.3);
+  border-color: rgba(249,115,22,0.45) !important;
 }
 
-/* BMW M-Sport Accent Stripe */
+/* ── RACING STRIPE ──────────────────────────────────────────── */
 @utility bmw-stripes {
-  background: linear-gradient(
-    90deg,
-    #00a3e0 0%,   /* Sky Blue */
-    #00a3e0 33%,
-    #00246b 33%,  /* Dark Navy Blue */
-    #00246b 66%,
-    #e82b2b 66%,  /* Sport Red */
-    #e82b2b 100%
+  background: linear-gradient(90deg,
+    #000 0%, #7f1d1d 20%, #dc2626 45%,
+    #f97316 50%, #dc2626 55%, #7f1d1d 80%, #000 100%
   );
 }
 
-/* Background grid styling for light tech theme */
+/* ── CYBER GRID ─────────────────────────────────────────────── */
 @utility animate-cyber-grid {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(15, 23, 42, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(15, 23, 42, 0.02) 1px, transparent 1px);
+  background-size: 52px 52px;
+  background-image:
+    linear-gradient(to right, rgba(220,38,38,0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(220,38,38,0.05) 1px, transparent 1px);
 }
 
-/* Light pulsing graphics mesh */
+/* ════════════════════════════════════════════════════════════
+   KEYFRAMES — CINEMATIC ANIMATION SYSTEM
+   ════════════════════════════════════════════════════════════ */
+
+/* Entry reveal */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(24px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0)   scale(1); }
+}
+@utility animate-fade-in-up {
+  animation: fadeInUp 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Slow mesh float */
 @keyframes mesh-pulse {
-  0%, 100% {
-    transform: scale(1) translate(0px, 0px);
-  }
-  33% {
-    transform: scale(1.05) translate(20px, -30px);
-  }
-  66% {
-    transform: scale(0.97) translate(-15px, 15px);
-  }
+  0%,100% { transform: scale(1)    translate(0,0); }
+  33%      { transform: scale(1.05) translate(22px,-32px); }
+  66%      { transform: scale(0.96) translate(-16px,16px); }
 }
-
 @utility animate-mesh-glow {
-  animation: mesh-pulse 18s ease-in-out infinite;
+  animation: mesh-pulse 22s ease-in-out infinite;
 }
 
-/* Scanning sweeps */
+/* Scan line sweep */
 @keyframes scan {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(100%);
-  }
+  0%   { transform: translateY(-100%); opacity: 0.6; }
+  100% { transform: translateY(100%);  opacity: 0; }
+}
+@utility animate-scan-line {
+  animation: scan 2.8s linear infinite;
 }
 
-@utility animate-scan-line {
-  animation: scan 4s linear infinite;
+/* Rotating radar sweep */
+@keyframes radar-sweep {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
+@utility animate-radar {
+  animation: radar-sweep 4s linear infinite;
+}
+
+/* Heartbeat pulse glow */
+@keyframes red-heartbeat {
+  0%,100% { box-shadow: 0 0 8px rgba(220,38,38,0.3); }
+  50%     { box-shadow: 0 0 28px rgba(220,38,38,0.8), 0 0 60px rgba(220,38,38,0.2); }
+}
+@utility animate-red-pulse {
+  animation: red-heartbeat 2s ease-in-out infinite;
+}
+
+/* Gold shimmer */
+@keyframes gold-shimmer {
+  0%,100% { box-shadow: 0 0 6px rgba(245,158,11,0.2); }
+  50%     { box-shadow: 0 0 22px rgba(245,158,11,0.7), 0 0 50px rgba(245,158,11,0.15); }
+}
+@utility animate-gold-pulse {
+  animation: gold-shimmer 2.5s ease-in-out infinite;
+}
+
+/* Camera frame corner flicker */
+@keyframes corner-flicker {
+  0%,100% { opacity: 1; }
+  45%     { opacity: 0.4; }
+  50%     { opacity: 1; }
+  55%     { opacity: 0.4; }
+}
+@utility animate-corner-flicker {
+  animation: corner-flicker 6s ease-in-out infinite;
+}
+
+/* Racing speed lines */
+@keyframes speed-line {
+  from { transform: translateX(-200%) skewX(-15deg); opacity: 0; }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  to   { transform: translateX(300%)  skewX(-15deg); opacity: 0; }
+}
+@utility animate-speed-line {
+  animation: speed-line 2.4s ease-in-out infinite;
+}
+
+/* Gauge needle swing */
+@keyframes needle-idle {
+  0%,100% { transform: rotate(-2deg); }
+  50%     { transform: rotate(2deg); }
+}
+@utility animate-needle-idle {
+  animation: needle-idle 3s ease-in-out infinite;
+}
+
+/* Data stream ticker */
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+@utility animate-ticker {
+  animation: ticker-scroll 20s linear infinite;
+}
+
+/* Holo circle rotate */
+@keyframes holo-spin {
+  from { transform: rotate(0deg);   opacity: 0.6; }
+  50%  { opacity: 1; }
+  to   { transform: rotate(360deg); opacity: 0.6; }
+}
+@utility animate-holo-spin {
+  animation: holo-spin 12s linear infinite;
+}
+
+/* Stagger helper delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-500 { animation-delay: 0.5s; }
+.delay-700 { animation-delay: 0.7s; }
