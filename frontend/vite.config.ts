@@ -23,6 +23,8 @@ export default defineConfig({
         ]),
   ],
 
+  base: isWeb ? "/Virtual-steering-wheel/" : "./",
+
   server: {
     port: 5173,
   },
