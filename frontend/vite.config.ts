@@ -3,18 +3,24 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import electron from "vite-plugin-electron/simple";
 
+const isWeb = process.env.BUILD_TARGET === "web";
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
     react(),
-    electron({
-      main: {
-        entry: "electron/main.ts",
-      },
-      preload: {
-        input: "electron/preload.ts",
-      },
-    }),
+    ...(isWeb
+      ? []
+      : [
+          electron({
+            main: {
+              entry: "electron/main.ts",
+            },
+            preload: {
+              input: "electron/preload.ts",
+            },
+          }),
+        ]),
   ],
 
   server: {
@@ -22,6 +28,6 @@ export default defineConfig({
   },
 
   build: {
-    outDir: "dist",
+    outDir: isWeb ? "dist-web" : "dist",
   },
 });
