@@ -14,12 +14,17 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
   const [isExpanded, setIsExpanded] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
 
+  const [width, setWidth] = useState(360);
+  const [isResizing, setIsResizing] = useState(false);
+  const resizeStart = useRef({ width: 0, x: 0 });
+
   const dragOffset = useRef({ x: 0, y: 0 });
   const windowRef = useRef<HTMLDivElement>(null);
 
-  const W_NORMAL  = 360;
-  const W_EXPANDED = 560;
-  const W = isExpanded ? W_EXPANDED : W_NORMAL;
+  // Update width when toggle expand is clicked (for quick toggling support)
+  useEffect(() => {
+    setWidth(isExpanded ? 560 : 360);
+  }, [isExpanded]);
 
   const onMouseDown = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
@@ -28,6 +33,13 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
     setIsDragging(true);
   }, []);
 
+  const onResizeMouseDown = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsResizing(true);
+    resizeStart.current = { width, x: e.clientX };
+  }, [width]);
+
   useEffect(() => {
     if (!isDragging) return;
 
@@ -35,7 +47,7 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
       const nx = e.clientX - dragOffset.current.x;
       const ny = e.clientY - dragOffset.current.y;
       // Clamp within viewport
-      const maxX = window.innerWidth  - (windowRef.current?.offsetWidth  ?? W_NORMAL);
+      const maxX = window.innerWidth  - (windowRef.current?.offsetWidth  ?? width);
       const maxY = window.innerHeight - (windowRef.current?.offsetHeight ?? 200);
       setPos({ x: Math.max(0, Math.min(nx, maxX)), y: Math.max(0, Math.min(ny, maxY)) });
     };
@@ -47,7 +59,25 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
       window.removeEventListener("mousemove", onMove);
       window.removeEventListener("mouseup", onUp);
     };
-  }, [isDragging]);
+  }, [isDragging, width]);
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const onMove = (e: MouseEvent) => {
+      const dx = e.clientX - resizeStart.current.x;
+      const newWidth = Math.max(280, Math.min(1000, resizeStart.current.width + dx));
+      setWidth(newWidth);
+    };
+
+    const onUp = () => setIsResizing(false);
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [isResizing]);
 
   // Restore button — shown when camera is hidden
   if (!isVisible) {
@@ -75,14 +105,14 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
       style={{
         left: pos.x,
         top:  pos.y,
-        width: W,
-        transition: isDragging ? "none" : "width 0.25s cubic-bezier(0.16,1,0.3,1)",
+        width: width,
+        transition: (isDragging || isResizing) ? "none" : "width 0.25s cubic-bezier(0.16,1,0.3,1)",
         cursor: isDragging ? "grabbing" : "default",
       }}
     >
       {/* Drop shadow + glow wrapper */}
       <div
-        className="rounded-2xl overflow-hidden"
+        className="rounded-2xl overflow-hidden relative"
         style={{
           boxShadow: isDragging
             ? "0 30px 80px rgba(0,0,0,0.9), 0 0 40px rgba(220,38,38,0.25)"
@@ -160,7 +190,7 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
 
         {/* ─── Camera content ──────────────────────────────── */}
         {!isMinimized && (
-          <div style={{ pointerEvents: isDragging ? "none" : "auto" }}>
+          <div style={{ pointerEvents: (isDragging || isResizing) ? "none" : "auto" }}>
             <CameraFeed
               isExpanded={isExpanded}
               onToggleExpand={() => setIsExpanded(v => !v)}
@@ -178,6 +208,27 @@ export default function DraggableCameraWindow({ defaultX = 60, defaultY = 80 }: 
             <span className="text-[9px] font-bold tracking-widest uppercase" style={{ color: "rgba(255,255,255,0.2)" }}>
               Camera Minimized
             </span>
+          </div>
+        )}
+
+        {/* Custom Resizable Drag Corner Handle */}
+        {!isMinimized && (
+          <div
+            onMouseDown={onResizeMouseDown}
+            className="absolute bottom-0 right-0 w-6 h-6 cursor-se-resize z-[1010] flex items-end justify-end p-1 select-none"
+            title="Drag to resize camera"
+          >
+            {/* Cybersecurity style diagonal lines */}
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              className="text-red-500/50 hover:text-red-500 transition-colors"
+            >
+              <line x1="12" y1="0" x2="0" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="12" y1="4" x2="4" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+              <line x1="12" y1="8" x2="8" y2="12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
           </div>
         )}
       </div>

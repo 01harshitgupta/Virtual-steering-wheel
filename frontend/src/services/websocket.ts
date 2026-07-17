@@ -102,6 +102,14 @@ class WebSocketService {
     
     useStore.getState().setConnectionStatus(false);
   }
+
+  sendKey(action: "Dn" | "Up", vk: number): boolean {
+    if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+      this.socket.send(`${action} ${vk}`);
+      return true;
+    }
+    return false;
+  }
 }
 
 export const webSocketService = new WebSocketService();

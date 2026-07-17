@@ -1,4 +1,5 @@
 #include "WebSocketServer.h"
+#include "InputController.h"
 #include <iostream>
 #include <sstream>
 #include <algorithm>
@@ -24,18 +25,18 @@ static std::string base64Encode(const unsigned char* bytes, size_t len) {
     std::string encoded;
     encoded.reserve(((len + 2) / 3) * 4);
     
-    size_t i = 0;
-    while (i < len) {
-        uint32_t octet_a = i < len ? bytes[i++] : 0;
-        uint32_t octet_b = i < len ? bytes[i++] : 0;
-        uint32_t octet_c = i < len ? bytes[i++] : 0;
+    for (size_t i = 0; i < len; i += 3) {
+        uint32_t val = (bytes[i] << 16);
+        bool has_b = (i + 1 < len);
+        bool has_c = (i + 2 < len);
         
-        uint32_t triple = (octet_a << 16) + (octet_b << 8) + octet_c;
+        if (has_b) val |= (bytes[i + 1] << 8);
+        if (has_c) val |= bytes[i + 2];
         
-        encoded.push_back(char_table[(triple >> 18) & 0x3F]);
-        encoded.push_back(char_table[(triple >> 12) & 0x3F]);
-        encoded.push_back(i > len + 1 ? '=' : char_table[(triple >> 6) & 0x3F]);
-        encoded.push_back(i > len ? '=' : char_table[triple & 0x3F]);
+        encoded.push_back(char_table[(val >> 18) & 0x3F]);
+        encoded.push_back(char_table[(val >> 12) & 0x3F]);
+        encoded.push_back(has_b ? char_table[(val >> 6) & 0x3F] : '=');
+        encoded.push_back(has_c ? char_table[val & 0x3F] : '=');
     }
     return encoded;
 }
@@ -108,7 +109,11 @@ static void sha1(const std::string& input, unsigned char* digest) {
     }
 }
 
-WebSocketServer::WebSocketServer() : port(8000), running(false), listenSocket(INVALID_SOCKET) {}
+WebSocketServer::WebSocketServer() : port(8000), running(false), listenSocket(INVALID_SOCKET), inputController(nullptr) {}
+
+void WebSocketServer::setInputController(InputController* controller) {
+    inputController = controller;
+}
 
 WebSocketServer::~WebSocketServer() {
     stop();
@@ -202,6 +207,42 @@ std::string WebSocketServer::calculateWebSocketAccept(const std::string& wsKey) 
     return base64Encode(digest, 20);
 }
 
+// Decode a masked text frame from buffer
+static std::string decodeFrame(unsigned char* buf, int len) {
+    if (len < 6) return "";
+    
+    // Check FIN bit and opcode (opcode 1 is Text)
+    int opcode = buf[0] & 0x0F;
+    if (opcode != 1) return "";
+    
+    bool masked = (buf[1] & 0x80) != 0;
+    uint64_t payloadLen = buf[1] & 0x7F;
+    
+    int maskOffset = 2;
+    if (payloadLen == 126) {
+        if (len < 8) return "";
+        payloadLen = (buf[2] << 8) | buf[3];
+        maskOffset = 4;
+    } else if (payloadLen == 127) {
+        return ""; // Too large, ignore
+    }
+    
+    if (!masked) return ""; // Browser clients must mask
+    
+    if (len < maskOffset + 4 + static_cast<int>(payloadLen)) return ""; // Buffer too small for complete frame
+    
+    unsigned char mask[4];
+    memcpy(mask, buf + maskOffset, 4);
+    int payloadOffset = maskOffset + 4;
+    
+    std::string payload;
+    payload.reserve(payloadLen);
+    for (size_t i = 0; i < payloadLen; i++) {
+        payload.push_back(buf[payloadOffset + i] ^ mask[i % 4]);
+    }
+    return payload;
+}
+
 void WebSocketServer::handleClient(SocketType clientSocket) {
     char buffer[2048] = {0};
     int bytesRead = recv(clientSocket, buffer, sizeof(buffer) - 1, 0);
@@ -237,11 +278,26 @@ void WebSocketServer::handleClient(SocketType clientSocket) {
 
     std::cout << "[WebSocketServer] Client connected. Registered to socket array." << std::endl;
 
-    // Keep connection alive or read frames
-    char frameBuffer[1024];
+    // Keep connection alive and process incoming messages
+    unsigned char frameBuffer[2048];
     while (running) {
-        int r = recv(clientSocket, frameBuffer, sizeof(frameBuffer), 0);
+        int r = recv(clientSocket, reinterpret_cast<char*>(frameBuffer), sizeof(frameBuffer) - 1, 0);
         if (r <= 0) break; // disconnected
+        
+        std::string payload = decodeFrame(frameBuffer, r);
+        if (!payload.empty() && inputController != nullptr) {
+            if (payload.rfind("Dn ", 0) == 0) {
+                try {
+                    int vk = std::stoi(payload.substr(3));
+                    inputController->sendKey(vk, false);
+                } catch (...) {}
+            } else if (payload.rfind("Up ", 0) == 0) {
+                try {
+                    int vk = std::stoi(payload.substr(3));
+                    inputController->sendKey(vk, true);
+                } catch (...) {}
+            }
+        }
     }
 
     {

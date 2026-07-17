@@ -3,28 +3,24 @@ import { useStore } from "../../store/useStore";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { SoundEffects } from "../../utils/audio";
 
 export default function Header() {
   const { isConnected, isTracking, latency } = useStore();
   const navigate = useNavigate();
   const [showInfoModal, setShowInfoModal] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false); // Default to Light Mode as requested by user ("some light color")
+  const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode for F1 theme
   const [sysStats, setSysStats] = useState({ cpu: 0, ram: 0 });
 
-  // Synchronize isDarkMode with document.documentElement
+  // Force dark class on document element
   useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [isDarkMode]);
+    document.documentElement.classList.add("dark");
+  }, []);
 
   // Dynamically poll CPU & RAM telemetry from Electron main process
   useEffect(() => {
     const ds = (window as any).DriveSense;
     if (!ds || !ds.getSystemStats) {
-      // Standby mock statistics generator if running inside local web browsers
       const interval = setInterval(() => {
         setSysStats({
           cpu: Math.round(1 + Math.random() * 2),
@@ -53,43 +49,53 @@ export default function Header() {
     };
   }, []);
 
+  const handleNavClick = (path: string) => {
+    SoundEffects.playClick();
+    navigate(path);
+  };
+
+  const handleInfoModalOpen = () => {
+    SoundEffects.playClick();
+    setShowInfoModal(true);
+  };
+
+  const handleInfoModalClose = () => {
+    SoundEffects.playClick();
+    setShowInfoModal(false);
+  };
+
   return (
     <header
-      className="h-16 px-6 flex items-center justify-between select-none z-10 w-full relative glass-card !rounded-none border-x-0 border-t-0"
+      className="h-16 px-6 flex items-center justify-between select-none z-10 w-full relative bg-[#090e1a]/85 border-b border-[#00e5ff]/15 shadow-xl"
     >
-      {/* Subtle speed line sweep */}
+      {/* Carbon texture layer */}
+      <div className="absolute inset-0 carbon-bg opacity-30 pointer-events-none" />
+
+      {/* Speed sweep overlay */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-1/2 left-0 right-0 h-px animate-speed-line"
-          style={{ background: "linear-gradient(90deg, transparent, rgba(220,38,38,0.15), transparent)", animationDuration: "4s" }} />
+          style={{ background: "linear-gradient(90deg, transparent, rgba(0,229,255,0.12), transparent)", animationDuration: "5s" }} />
       </div>
+
       {/* Left: Brand + status */}
       <div className="flex items-center gap-4 relative z-10">
-        <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => navigate("/")}>
-          <Zap className="w-5 h-5 transition-all duration-300 group-hover:scale-110" style={{ color: "#ef4444", filter: "drop-shadow(0 0 4px rgba(239,68,68,0.6))" }} />
-          <span className="font-black text-sm uppercase tracking-[0.15em]" style={{
-            background: "linear-gradient(135deg, #fff 0%, #ef4444 80%)",
-            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-          }}>
-            DriveSense Console
+        <div className="flex items-center gap-2.5 cursor-pointer group" onClick={() => handleNavClick("/")}>
+          <Zap className="w-5 h-5 text-[#00e5ff] drop-shadow-[0_0_4px_#00e5ff] transition-all duration-300 group-hover:scale-110" />
+          <span className="font-extrabold text-sm uppercase tracking-[0.2em] text-[#f8fafc]">
+            DriveSense <span className="text-[#00e5ff] font-mono">Console</span>
           </span>
         </div>
-        <span className="h-4 w-px" style={{ background: "rgba(220,38,38,0.2)" }} />
+        <span className="h-4 w-px bg-slate-800" />
         <div
-          className="flex items-center gap-2 px-2 py-1 rounded"
-          style={{
-            background: isConnected ? "rgba(34,197,94,0.08)" : "rgba(255,255,255,0.04)",
-            border: `1px solid ${isConnected ? "rgba(34,197,94,0.25)" : "rgba(255,255,255,0.07)"}`,
-          }}
+          className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#050816] border border-[#00e5ff]/10"
         >
           <span
-            className="w-1.5 h-1.5 rounded-full"
-            style={{ background: isConnected ? "#22c55e" : "rgba(255,255,255,0.2)",
-              boxShadow: isConnected ? "0 0 6px rgba(34,197,94,0.9)" : "none",
-              animation: isConnected ? "red-heartbeat 2s ease-in-out infinite" : "none",
-            }}
+            className={`w-1.5 h-1.5 rounded-full ${
+              isConnected ? "bg-[#00ff95] animate-green-pulse" : "bg-neutral-700"
+            }`}
           />
-          <span className="text-[9px] font-bold uppercase tracking-wider" style={{ color: isConnected ? "#4ade80" : "rgba(255,255,255,0.3)" }}>
-            {isConnected ? "Server Online" : "Server Standby"}
+          <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+            {isConnected ? "Telemetry Linked" : "Telemetry Standby"}
           </span>
         </div>
       </div>
@@ -97,26 +103,26 @@ export default function Header() {
       {/* Right: Telemetry bar + actions */}
       <div className="flex items-center gap-4 relative z-10">
         <div
-          className="hidden md:flex items-center gap-4 text-[10px] font-mono font-bold px-4 py-1.5 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)]"
+          className="hidden md:flex items-center gap-4 text-[9px] font-mono font-bold px-4 py-1.5 rounded-lg border border-[#00e5ff]/10 bg-[#050816]/75 text-slate-400"
         >
           <span className="flex items-center gap-1.5">
-            <Cpu className="w-3 h-3 text-red-500/80" />
+            <Cpu className="w-3 h-3 text-[#00e5ff]" />
             <span>CPU: {sysStats.cpu}%</span>
           </span>
-          <span className="w-px h-3 bg-[var(--border-secondary)]" />
+          <span className="w-px h-3 bg-slate-800" />
           <span className="flex items-center gap-1.5">
-            <HardDrive className="w-3 h-3 text-red-500/80" />
+            <HardDrive className="w-3 h-3 text-[#00e5ff]" />
             <span>RAM: {sysStats.ram} MB</span>
           </span>
           {isTracking && (
             <>
-              <span className="w-px h-3 bg-[var(--border-secondary)]" />
-              <span className="flex items-center gap-1.5 text-orange-500">
+              <span className="w-px h-3 bg-slate-800" />
+              <span className="flex items-center gap-1.5 text-[#ff9800]">
                 <Activity className="w-3 h-3 animate-pulse" />
                 <span>{latency}ms</span>
               </span>
-              <span className="w-px h-3 bg-[var(--border-secondary)]" />
-              <span className="text-red-500 drop-shadow-[0_0_6px_rgba(239,68,68,0.5)]">60 FPS</span>
+              <span className="w-px h-3 bg-slate-800" />
+              <span className="text-[#00ff95]" style={{ textShadow: "0 0 6px rgba(0,255,149,0.4)" }}>60 FPS</span>
             </>
           )}
         </div>
@@ -124,30 +130,23 @@ export default function Header() {
         {/* Action icons */}
         <div className="flex items-center gap-2">
           <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
-            title="Toggle Theme"
-          >
-            {isDarkMode ? <Sun className="w-4 h-4 text-amber-500" /> : <Moon className="w-4 h-4" />}
-          </button>
-          <button
-            onClick={() => setShowInfoModal(true)}
-            className="p-2 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
-            title="System Diagnostics"
+            onClick={handleInfoModalOpen}
+            className="p-2 rounded-lg border border-slate-800 bg-[#0d1425]/50 text-slate-400 hover:text-[#f8fafc] hover:bg-slate-800 transition-all cursor-pointer"
+            title="Cockpit Guide"
           >
             <Info className="w-4 h-4" />
           </button>
           <button
-            onClick={() => navigate("/settings")}
-            className="p-2 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
-            title="Settings"
+            onClick={() => handleNavClick("/settings")}
+            className="p-2 rounded-lg border border-slate-800 bg-[#0d1425]/50 text-slate-400 hover:text-[#f8fafc] hover:bg-slate-800 transition-all cursor-pointer"
+            title="Cockpit Settings"
           >
             <Settings className="w-4 h-4" />
           </button>
-          <span className="h-4 w-px bg-[var(--border-secondary)]" />
+          <span className="h-4 w-px bg-slate-800" />
           <button
-            className="w-8 h-8 rounded-xl border border-[var(--border-primary)] bg-[var(--border-secondary)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-primary)] transition-all cursor-pointer"
-            title="Profile"
+            className="w-8 h-8 rounded-lg border border-slate-800 bg-[#0d1425]/50 flex items-center justify-center text-slate-400 hover:text-[#f8fafc] hover:bg-slate-800 transition-all cursor-pointer"
+            title="User Profile"
           >
             <User className="w-4 h-4" />
           </button>
@@ -157,70 +156,71 @@ export default function Header() {
       {/* Help / Information Modal Popover overlay */}
       <AnimatePresence>
         {showInfoModal && (
-          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 bg-[#050816]/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 10 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 10 }}
               transition={{ type: "spring", stiffness: 350, damping: 26 }}
-              className="glass-card w-full max-w-md p-6 rounded-2xl border border-slate-800 shadow-2xl flex flex-col gap-4 relative"
+              className="glass-card w-full max-w-md p-6 rounded-2xl border border-slate-850 shadow-2xl flex flex-col gap-4 relative bg-[#0d1425]/95"
             >
-              {/* Modal Close Button */}
+              {/* Corner brackets styling for F1 HUD look */}
+              <div className="absolute top-2 left-2 w-3.5 h-3.5 border-t-2 border-l-2 border-[#00e5ff]/50" />
+              <div className="absolute top-2 right-2 w-3.5 h-3.5 border-t-2 border-r-2 border-[#00e5ff]/50" />
+              <div className="absolute bottom-2 left-2 w-3.5 h-3.5 border-b-2 border-l-2 border-[#00e5ff]/50" />
+              <div className="absolute bottom-2 right-2 w-3.5 h-3.5 border-b-2 border-r-2 border-[#00e5ff]/50" />
+
               <button
-                onClick={() => setShowInfoModal(false)}
+                onClick={handleInfoModalClose}
                 className="absolute top-4 right-4 p-1 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-900 cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Header info */}
-              <div className="flex items-center gap-2.5 pb-3 border-b border-slate-900">
-                <HelpCircle className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-                  DriveSense Quick Guide
+              <div className="flex items-center gap-2.5 pb-3 border-b border-slate-800">
+                <HelpCircle className="w-5 h-5 text-[#00e5ff] drop-shadow-[0_0_4px_#00e5ff]" />
+                <h3 className="text-[12px] font-black uppercase tracking-[0.2em] text-[#f8fafc]">
+                  Cockpit Telemetry Guide
                 </h3>
               </div>
 
-              {/* Content detail */}
               <div className="flex flex-col gap-4 text-xs text-slate-400 leading-relaxed font-sans">
                 <p>
-                  Welcome to <strong>DriveSense Console</strong>. This software bridges real-time hand-gestures from your webcam to trigger native keyboard commands globally on Windows.
+                  DriveSense AI bridges real-time hand-steering from your webcam to trigger native keyboard events in browser racing simulators (such as arrow/WASD inputs).
                 </p>
 
-                {/* Steps list */}
-                <div className="flex flex-col gap-2 bg-slate-950/50 p-3.5 rounded-xl border border-slate-900">
+                <div className="flex flex-col gap-2 bg-[#050816] p-3 rounded-lg border border-slate-800">
                   <div className="flex items-start gap-2">
-                    <Play className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
+                    <Play className="w-3.5 h-3.5 text-[#00e5ff] mt-0.5 shrink-0" />
                     <span>
-                      Click <strong>Start Engine</strong> in the dashboard to turn on the camera tracker.
+                      Toggle <strong>Start Engine</strong> in the cockpit header to launch tracking.
                     </span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <Key className="w-3.5 h-3.5 text-cyan-400 mt-0.5 shrink-0" />
+                    <Key className="w-3.5 h-3.5 text-[#00e5ff] mt-0.5 shrink-0" />
                     <span>
-                      Focus any browser tab (like CrazyGames) to control it with tilts & hand distance levels!
+                      Focus any web game tab to capture virtual steering commands instantly.
                     </span>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-1.5 border-t border-slate-900 pt-3">
-                  <span className="font-bold text-[10px] text-slate-500 uppercase tracking-wider">
+                <div className="flex flex-col gap-1.5 border-t border-slate-800 pt-3">
+                  <span className="font-bold text-[10px] text-slate-500 uppercase tracking-widest">
                     Default Virtual Bindings:
                   </span>
-                  <ul className="list-disc pl-4 space-y-1 text-slate-500">
+                  <ul className="list-disc pl-4 space-y-1 text-slate-500 font-mono text-[10px]">
                     <li>Tilt hands left/right: Turns A / D (ArrowLeft / ArrowRight)</li>
-                    <li>Hold hands wide: Accelerates W (ArrowUp)</li>
-                    <li>Show open palm close to screen: Sudden Brake Spacebar (S)</li>
+                    <li>Raise thumbs (Right Hand): Accelerates W (ArrowUp)</li>
+                    <li>Lower thumbs (Left Hand): Brakes S (ArrowDown)</li>
                   </ul>
                 </div>
               </div>
 
-              {/* Footer close */}
               <button
-                onClick={() => setShowInfoModal(false)}
-                className="w-full py-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 hover:bg-cyan-500/15 text-xs font-bold uppercase tracking-wider mt-2 transition-all cursor-pointer"
+                onClick={handleInfoModalClose}
+                className="w-full py-2.5 rounded-lg bg-[#00e5ff]/10 text-[#00e5ff] border border-[#00e5ff]/25 hover:bg-[#00e5ff]/15 text-[10px] font-black uppercase tracking-widest mt-2 transition-all cursor-pointer"
               >
-                Get Started
+                Close Systems Guide
               </button>
             </motion.div>
           </div>

@@ -3,7 +3,7 @@
 #include <iostream>
 
 Config::Config() 
-    : wsPort(8000), cameraIndex(0), sensitivity(1.5), deadzone(5.0), autoCenter(true) {}
+    : wsPort(8000), cameraIndex(-1), sensitivity(1.5), deadzone(5.0), autoCenter(true) {}
 
 void Config::loadFromFile(const std::string& filepath) {
     std::ifstream file(filepath);

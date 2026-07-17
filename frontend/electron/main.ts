@@ -78,8 +78,25 @@ using System.Runtime.InteropServices;
 public class KeyboardHelper {
     [DllImport("user32.dll")]
     public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);
-    public static void Dn(byte vk) { keybd_event(vk, 0, 0, 0); }
-    public static void Up(byte vk) { keybd_event(vk, 0, 2, 0); }
+    [DllImport("user32.dll")]
+    public static extern uint MapVirtualKey(uint uCode, uint uMapType);
+
+    public static void Dn(byte vk) {
+        byte scan = (byte)MapVirtualKey(vk, 0);
+        uint flags = 0;
+        if (vk >= 33 && vk <= 46) {
+            flags |= 1; // KEYEVENTF_EXTENDEDKEY
+        }
+        keybd_event(vk, scan, flags, 0);
+    }
+    public static void Up(byte vk) {
+        byte scan = (byte)MapVirtualKey(vk, 0);
+        uint flags = 2; // KEYEVENTF_KEYUP
+        if (vk >= 33 && vk <= 46) {
+            flags |= 1; // KEYEVENTF_EXTENDEDKEY
+        }
+        keybd_event(vk, scan, flags, 0);
+    }
 }';
 `;
     powershellProcess.stdin?.write(initCode + "\r\n");

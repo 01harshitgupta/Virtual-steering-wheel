@@ -30,12 +30,13 @@ int main() {
     WebSocketServer wsServer;
 
     // Connect hardware devices
-    if (!camera.open(config.cameraIndex)) {
-        std::cerr << "[Core Error] Failed to open default webcam device index. Check camera connections." << std::endl;
-        return -1;
+    bool useWebcam = true;
+    if (config.cameraIndex < 0 || !camera.open(config.cameraIndex)) {
+        std::cout << "[Core] Client-side web tracking mode active. Camera capture deferred to browser." << std::endl;
+        useWebcam = false;
     }
 
-    if (!tracker.init()) {
+    if (useWebcam && !tracker.init()) {
         std::cerr << "[Core Error] Failed to compile tracking pipelines." << std::endl;
         return -1;
     }
@@ -50,10 +51,17 @@ int main() {
         return -1;
     }
 
+    // Link input controller to WebSocket server to allow direct text-frame key commands
+    wsServer.setInputController(&input);
+
     // Launch WebSocket server thread
     wsServer.start();
 
-    std::cout << "[Core] Pipeline active. Press ESC in the diagnostics window to stop." << std::endl;
+    if (useWebcam) {
+        std::cout << "[Core] Multi-threaded pipeline active." << std::endl;
+    } else {
+        std::cout << "[Core] Multi-threaded pipeline active." << std::endl;
+    }
 
     cv::Mat frame;
     std::vector<HandData> hands;
@@ -61,6 +69,11 @@ int main() {
 
     // Main telemetry pipeline loop
     while (keepRunning) {
+        if (!useWebcam) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            continue;
+        }
+
         auto startTime = std::chrono::steady_clock::now();
 
         // 1. Process Video frame capture

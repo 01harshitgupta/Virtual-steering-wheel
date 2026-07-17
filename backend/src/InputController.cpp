@@ -29,9 +29,17 @@ void InputController::sendKey(unsigned short vKey, bool keyUp) {
     INPUT input = {0};
     input.type = INPUT_KEYBOARD;
     input.ki.wVk = vKey;
+    input.ki.wScan = static_cast<WORD>(MapVirtualKey(vKey, 0)); // 0 is MAPVK_VK_TO_VSC
+    
+    DWORD flags = 0;
     if (keyUp) {
-        input.ki.dwFlags = KEYEVENTF_KEYUP;
+        flags |= KEYEVENTF_KEYUP;
     }
+    // Extended key flags (arrow keys 0x25 to 0x28, and other navigation keys)
+    if (vKey >= 0x21 && vKey <= 0x2F) {
+        flags |= KEYEVENTF_EXTENDEDKEY;
+    }
+    input.ki.dwFlags = flags;
 
     SendInput(1, &input, sizeof(INPUT));
 #endif

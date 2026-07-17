@@ -303,8 +303,8 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
           }
           angleVal = Math.max(-95, Math.min(95, angleVal));
 
-          // Increased low-pass filtering smoothing (0.15 new, 0.85 history) to prevent any micro-fluctuations
-          const smoothedAngle = angleVal * 0.15 + prevAngleRef.current * 0.85;
+          // Low-pass filtering smoothing (0.45 new, 0.55 history) for highly responsive and stable input
+          const smoothedAngle = angleVal * 0.45 + prevAngleRef.current * 0.55;
           prevAngleRef.current = smoothedAngle;
           setSteeringAngle(smoothedAngle);
 
@@ -317,6 +317,11 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
           ctx.lineTo(rightHandX, rightHandY);
           ctx.stroke();
           ctx.setLineDash([]);
+        } else {
+          // Decay steering angle back to 0 if one hand is lost (prevents hard turning lockups)
+          const smoothedAngle = prevAngleRef.current * 0.65;
+          prevAngleRef.current = smoothedAngle;
+          setSteeringAngle(smoothedAngle);
         }
 
         // 4. Calculate Speed Throttle / Brake
@@ -344,30 +349,42 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
         ctx.textAlign = "center";
         ctx.fillText(`BMW HAND DETECTED (${activeGesture})`, w / 2, h - 25);
 
-      } else if (showSkeleton) {
-        // Standby face overlay when hands are not detected
-        const rawX = Math.sin(frameCount / 30) * 15;
-        const centerX = isFlipped ? w / 2 - rawX : w / 2 + rawX;
-        const centerY = h / 2 + Math.cos(frameCount / 25) * 8;
+      } else {
+        // No hands detected at all: reset steering angle and decelerate speed
+        const { setSteeringAngle } = useStore.getState();
+        const smoothedAngle = prevAngleRef.current * 0.55;
+        prevAngleRef.current = smoothedAngle;
+        setSteeringAngle(smoothedAngle);
 
-        ctx.strokeStyle = "rgba(0, 163, 224, 0.3)";
-        ctx.lineWidth = 1.5;
+        let currentSpeed = useStore.getState().speed;
+        currentSpeed = Math.max(0, currentSpeed - 3.5);
+        useStore.setState({ speed: currentSpeed, gesture: "None" });
 
-        ctx.beginPath();
-        ctx.ellipse(centerX, centerY, 55, 75, 0, 0, Math.PI * 2);
-        ctx.stroke();
+        if (showSkeleton) {
+          // Standby face overlay when hands are not detected
+          const rawX = Math.sin(frameCount / 30) * 15;
+          const centerX = isFlipped ? w / 2 - rawX : w / 2 + rawX;
+          const centerY = h / 2 + Math.cos(frameCount / 25) * 8;
 
-        const eyeL = { x: centerX - 18, y: centerY - 15 };
-        const eyeR = { x: centerX + 18, y: centerY - 15 };
-        const nose = { x: centerX, y: centerY + 5 };
+          ctx.strokeStyle = "rgba(0, 163, 224, 0.3)";
+          ctx.lineWidth = 1.5;
 
-        const points = [eyeL, eyeR, nose];
-        points.forEach((pt, idx) => {
           ctx.beginPath();
-          ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
-          ctx.fillStyle = idx % 2 === 0 ? "#00a3e0" : "#e82b2b";
-          ctx.fill();
-        });
+          ctx.ellipse(centerX, centerY, 55, 75, 0, 0, Math.PI * 2);
+          ctx.stroke();
+
+          const eyeL = { x: centerX - 18, y: centerY - 15 };
+          const eyeR = { x: centerX + 18, y: centerY - 15 };
+          const nose = { x: centerX, y: centerY + 5 };
+
+          const points = [eyeL, eyeR, nose];
+          points.forEach((pt, idx) => {
+            ctx.beginPath();
+            ctx.arc(pt.x, pt.y, 4, 0, Math.PI * 2);
+            ctx.fillStyle = idx % 2 === 0 ? "#00a3e0" : "#e82b2b";
+            ctx.fill();
+          });
+        }
       }
 
       // Render system status
@@ -582,9 +599,7 @@ export default function CameraFeed({ isExpanded = false, onToggleExpand }: Props
       </div>
 
       <div
-        className={`relative overflow-hidden flex items-center justify-center transition-all duration-300 ${
-          isExpanded ? "h-[480px]" : "aspect-video"
-        }`}
+        className="relative overflow-hidden flex items-center justify-center transition-all duration-300 aspect-video"
         style={{
           background: "radial-gradient(ellipse at center, #150000 0%, #080000 60%, #050505 100%)",
         }}

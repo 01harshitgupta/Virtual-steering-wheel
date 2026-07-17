@@ -9,22 +9,25 @@ interface Props {
 
 export default function MainLayout({ children }: Props) {
   return (
-    <div className="w-screen h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] flex overflow-hidden font-sans relative transition-colors duration-200">
-      {/* Red Bull ambient glows */}
-      <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] rounded-full bg-red-950/20 blur-[180px] pointer-events-none" />
-      <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-red-900/10 blur-[150px] pointer-events-none" />
-      <div className="absolute top-[40%] left-[40%] w-[30%] h-[30%] rounded-full bg-red-800/5 blur-[120px] pointer-events-none" />
+    <div className="w-screen h-screen carbon-bg text-[#f8fafc] flex overflow-hidden font-sans relative">
+      {/* Moving Cyber Grid Background */}
+      <div className="absolute inset-0 f1-cyber-grid pointer-events-none z-0" />
+
+      {/* Futuristic F1 Ambient Glows (Vignettes) */}
+      <div className="absolute top-[-25%] left-[-10%] w-[65%] h-[65%] rounded-full bg-blue-950/15 blur-[160px] pointer-events-none z-0" />
+      <div className="absolute bottom-[-15%] right-[-10%] w-[55%] h-[55%] rounded-full bg-blue-900/10 blur-[140px] pointer-events-none z-0" />
+      <div className="absolute top-[40%] left-[30%] w-[40%] h-[40%] rounded-full bg-sky-950/5 blur-[120px] pointer-events-none z-0" />
 
       {/* Navigation Sidebar */}
       <Sidebar />
 
       {/* Main content area */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10">
         {/* Top Header bar */}
         <Header />
 
         {/* Scrollable central screen display */}
-        <main className="flex-1 overflow-y-auto relative bg-[var(--bg-secondary)]/30">
+        <main className="flex-1 overflow-y-auto relative bg-[#050816]/30">
           {children}
         </main>
 

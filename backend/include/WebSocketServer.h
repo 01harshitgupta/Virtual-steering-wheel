@@ -13,6 +13,8 @@ typedef SOCKET SocketType;
 typedef int SocketType;
 #endif
 
+class InputController;
+
 class WebSocketServer {
 private:
     int port;
@@ -21,6 +23,7 @@ private:
     std::mutex clientsMutex;
     std::vector<SocketType> clientSockets;
     SocketType listenSocket;
+    InputController* inputController;
 
     void run();
     void handleClient(SocketType clientSocket);
@@ -32,6 +35,7 @@ public:
     ~WebSocketServer();
 
     bool init(int port);
+    void setInputController(InputController* controller);
     void start();
     void stop();
     void broadcastTelemetry(double angle, double speed, double confidence, int latency, const std::string& gesture);

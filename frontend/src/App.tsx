@@ -7,6 +7,7 @@ import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 import { useStore } from "./store/useStore";
 import LoadingScreen from "./components/LoadingScreen";
+import { webSocketService } from "./services/websocket";
 
 function App() {
   const { isTracking, isConnected, setSteeringAngle, setSpeed, addTelemetryPoint, settings, steeringAngle, gesture } = useStore();
@@ -180,19 +181,27 @@ function App() {
   // Synchronize telemetry state with global OS keyboard injector
   useEffect(() => {
     const ds = (window as any).DriveSense;
-    if (!ds) return;
+
+    const triggerSendKey = (action: "Dn" | "Up", vk: number) => {
+      // 1. Try to send via low-latency WebSocket connection first
+      const sentViaSocket = webSocketService.sendKey(action, vk);
+      if (!sentViaSocket && ds) {
+        // 2. Fallback to PowerShell keyboard injector if WebSocket is offline
+        ds.sendKey(action, vk);
+      }
+    };
 
     if (!isTracking) {
       // Release all key presses when tracking stops
-      ds.sendKey("Up", 0x25); // ArrowLeft
-      ds.sendKey("Up", 0x41); // A
-      ds.sendKey("Up", 0x27); // ArrowRight
-      ds.sendKey("Up", 0x44); // D
-      ds.sendKey("Up", 0x26); // ArrowUp
-      ds.sendKey("Up", 0x57); // W
-      ds.sendKey("Up", 0x28); // ArrowDown
-      ds.sendKey("Up", 0x53); // S
-      ds.sendKey("Up", 0x20); // Space
+      triggerSendKey("Up", 0x25); // ArrowLeft
+      triggerSendKey("Up", 0x41); // A
+      triggerSendKey("Up", 0x27); // ArrowRight
+      triggerSendKey("Up", 0x44); // D
+      triggerSendKey("Up", 0x26); // ArrowUp
+      triggerSendKey("Up", 0x57); // W
+      triggerSendKey("Up", 0x28); // ArrowDown
+      triggerSendKey("Up", 0x53); // S
+      triggerSendKey("Up", 0x20); // Space
       keyStateRef.current = { left: false, right: false, up: false, down: false };
       return;
     }
@@ -202,29 +211,29 @@ function App() {
     // 1. Steering key injections (Left: ArrowLeft + A, Right: ArrowRight + D)
     if (steeringAngle < -8) {
       if (!state.left) {
-        ds.sendKey("Dn", 0x25); ds.sendKey("Dn", 0x41);
+        triggerSendKey("Dn", 0x25); triggerSendKey("Dn", 0x41);
         state.left = true;
       }
       if (state.right) {
-        ds.sendKey("Up", 0x27); ds.sendKey("Up", 0x44);
+        triggerSendKey("Up", 0x27); triggerSendKey("Up", 0x44);
         state.right = false;
       }
     } else if (steeringAngle > 8) {
       if (!state.right) {
-        ds.sendKey("Dn", 0x27); ds.sendKey("Dn", 0x44);
+        triggerSendKey("Dn", 0x27); triggerSendKey("Dn", 0x44);
         state.right = true;
       }
       if (state.left) {
-        ds.sendKey("Up", 0x25); ds.sendKey("Up", 0x41);
+        triggerSendKey("Up", 0x25); triggerSendKey("Up", 0x41);
         state.left = false;
       }
     } else {
       if (state.left) {
-        ds.sendKey("Up", 0x25); ds.sendKey("Up", 0x41);
+        triggerSendKey("Up", 0x25); triggerSendKey("Up", 0x41);
         state.left = false;
       }
       if (state.right) {
-        ds.sendKey("Up", 0x27); ds.sendKey("Up", 0x44);
+        triggerSendKey("Up", 0x27); triggerSendKey("Up", 0x44);
         state.right = false;
       }
     }
@@ -235,29 +244,29 @@ function App() {
 
     if (isAccelerating) {
       if (!state.up) {
-        ds.sendKey("Dn", 0x26); ds.sendKey("Dn", 0x57);
+        triggerSendKey("Dn", 0x26); triggerSendKey("Dn", 0x57);
         state.up = true;
       }
       if (state.down) {
-        ds.sendKey("Up", 0x28); ds.sendKey("Up", 0x53); ds.sendKey("Up", 0x20);
+        triggerSendKey("Up", 0x28); triggerSendKey("Up", 0x53); triggerSendKey("Up", 0x20);
         state.down = false;
       }
     } else if (isBraking) {
       if (!state.down) {
-        ds.sendKey("Dn", 0x28); ds.sendKey("Dn", 0x53); ds.sendKey("Dn", 0x20);
+        triggerSendKey("Dn", 0x28); triggerSendKey("Dn", 0x53); triggerSendKey("Dn", 0x20);
         state.down = true;
       }
       if (state.up) {
-        ds.sendKey("Up", 0x26); ds.sendKey("Up", 0x57);
+        triggerSendKey("Up", 0x26); triggerSendKey("Up", 0x57);
         state.up = false;
       }
     } else {
       if (state.up) {
-        ds.sendKey("Up", 0x26); ds.sendKey("Up", 0x57);
+        triggerSendKey("Up", 0x26); triggerSendKey("Up", 0x57);
         state.up = false;
       }
       if (state.down) {
-        ds.sendKey("Up", 0x28); ds.sendKey("Up", 0x53); ds.sendKey("Up", 0x20);
+        triggerSendKey("Up", 0x28); triggerSendKey("Up", 0x53); triggerSendKey("Up", 0x20);
         state.down = false;
       }
     }
