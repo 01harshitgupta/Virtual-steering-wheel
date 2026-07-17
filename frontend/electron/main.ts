@@ -143,9 +143,15 @@ function startBackend() {
     }
   } else {
     // Production path bundled as extraResource
-    const prodPath = path.join(process.resourcesPath, "bin/DriveSenseBackend.exe");
-    if (fs.existsSync(prodPath)) {
-      backendPath = prodPath;
+    const prodPaths = [
+      path.join(process.resourcesPath, "bin/DriveSenseBackend.exe"),
+      path.join(process.resourcesPath, "bin/bin/DriveSenseBackend.exe"),
+    ];
+    for (const p of prodPaths) {
+      if (fs.existsSync(p)) {
+        backendPath = p;
+        break;
+      }
     }
   }
 

@@ -61,7 +61,7 @@ function v() {
 			p(`[PowerShell Stdout]: ${e.toString().trim()}`);
 		}), _.stderr?.on("data", (e) => {
 			m(`[PowerShell Stderr Error]: ${e.toString().trim()}`);
-		}), _.stdin?.write("\nAdd-Type -TypeDefinition '\nusing System;\nusing System.Runtime.InteropServices;\npublic class KeyboardHelper {\n    [DllImport(\"user32.dll\")]\n    public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);\n    public static void Dn(byte vk) { keybd_event(vk, 0, 0, 0); }\n    public static void Up(byte vk) { keybd_event(vk, 0, 2, 0); }\n}';\n\r\n");
+		}), _.stdin?.write("\nAdd-Type -TypeDefinition '\nusing System;\nusing System.Runtime.InteropServices;\npublic class KeyboardHelper {\n    [DllImport(\"user32.dll\")]\n    public static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, int dwExtraInfo);\n    [DllImport(\"user32.dll\")]\n    public static extern uint MapVirtualKey(uint uCode, uint uMapType);\n\n    public static void Dn(byte vk) {\n        byte scan = (byte)MapVirtualKey(vk, 0);\n        uint flags = 0;\n        if (vk >= 33 && vk <= 46) {\n            flags |= 1; // KEYEVENTF_EXTENDEDKEY\n        }\n        keybd_event(vk, scan, flags, 0);\n    }\n    public static void Up(byte vk) {\n        byte scan = (byte)MapVirtualKey(vk, 0);\n        uint flags = 2; // KEYEVENTF_KEYUP\n        if (vk >= 33 && vk <= 46) {\n            flags |= 1; // KEYEVENTF_EXTENDEDKEY\n        }\n        keybd_event(vk, scan, flags, 0);\n    }\n}';\n\r\n");
 	} catch (e) {
 		m("[KeyboardHook] Failed to start PowerShell injector: " + e);
 	}
@@ -77,8 +77,11 @@ function b() {
 	if (g) return;
 	let e = "";
 	if (t.isPackaged) {
-		let t = r.join(process.resourcesPath, "bin/DriveSenseBackend.exe");
-		i.existsSync(t) && (e = t);
+		let t = [r.join(process.resourcesPath, "bin/DriveSenseBackend.exe"), r.join(process.resourcesPath, "bin/bin/DriveSenseBackend.exe")];
+		for (let n of t) if (i.existsSync(n)) {
+			e = n;
+			break;
+		}
 	} else {
 		let t = [
 			r.join(u, "../../backend/build/Debug/DriveSenseBackend.exe"),

@@ -222,6 +222,9 @@ export default function LoadingScreen({ onComplete }: Props) {
             <p className="text-[8px] tracking-[0.55em] text-[#94a3b8] uppercase font-bold mt-1">
               F1 Digital Cockpit Telemetry
             </p>
+            <p className="text-[7px] tracking-[0.3em] text-[#00e5ff] uppercase font-extrabold mt-1">
+              CREATED BY HARSHIT GUPTA
+            </p>
           </div>
         </div>
 

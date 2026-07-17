@@ -71,6 +71,9 @@ export default function Sidebar() {
           <span className="text-[8px] font-bold text-slate-500 uppercase tracking-widest block mt-0.5">
             Cockpit Console
           </span>
+          <span className="text-[7px] font-extrabold text-[#00e5ff] uppercase tracking-[0.12em] block mt-0.5">
+            By HARSHIT GUPTA
+          </span>
         </div>
       </div>
 

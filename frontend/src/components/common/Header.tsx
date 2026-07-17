@@ -11,6 +11,8 @@ export default function Header() {
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true); // Default to dark mode for F1 theme
   const [sysStats, setSysStats] = useState({ cpu: 0, ram: 0 });
+  
+  const isElectron = !!(window as any).DriveSense;
 
   // Force dark class on document element
   useEffect(() => {
@@ -129,6 +131,17 @@ export default function Header() {
 
         {/* Action icons */}
         <div className="flex items-center gap-2">
+          {!isElectron && (
+            <a
+              href="https://github.com/01harshitgupta/Virtual-steering-wheel/raw/main/frontend/dist-build/DriveSense%20AI%20Setup%201.0.0.exe"
+              download
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#00e5ff]/30 bg-[#00e5ff]/10 text-[#00e5ff] hover:bg-[#00e5ff]/20 font-black text-[9px] uppercase tracking-wider transition-all cursor-pointer mr-1.5"
+              title="Download Windows Desktop App"
+            >
+              <Zap className="w-3.5 h-3.5 fill-[#00e5ff]/20 animate-pulse text-[#00e5ff]" />
+              <span>Download Desktop App</span>
+            </a>
+          )}
           <button
             onClick={handleInfoModalOpen}
             className="p-2 rounded-lg border border-slate-800 bg-[#0d1425]/50 text-slate-400 hover:text-[#f8fafc] hover:bg-slate-800 transition-all cursor-pointer"
